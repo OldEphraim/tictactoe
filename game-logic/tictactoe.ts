@@ -1,30 +1,37 @@
 export type Player = "x" | "o";
 export type Cell = Player | "";
-export type Board = [Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell, Cell];
-export type Wins = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6],
-];
+export type Board = Cell[];
+export type Wins = number[][];
 
-export const Wins: Wins = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6],
-];
-
-export const initialGameState = ["", "", "", "", "", "", "", "", ""] as Board;
 export const initialPlayer = "x" as Player;
+
+export function calculateWins(size: number): Wins {
+  const horizontalWins: Wins = [];
+  for (let i = 0; i < size; i++) {
+    horizontalWins[i] = [];
+    for (let j = 0; j < size; j++) {
+      horizontalWins[i][j] = i * size + j;
+    }
+  }
+  const verticalWins: Wins = [];
+  for (let k = 0; k < size; k++) {
+    verticalWins[k] = [];
+    for (let l = 0; l < size; l++) {
+      verticalWins[k][l] = k + size * l;
+    }
+  }
+  const diagonalWins: Wins = [[], []];
+  for (let m = 0; m < size; m++) {
+    diagonalWins[0][m] = m + size * m;
+    diagonalWins[1][m] = size - 1 + (size - 1) * m;
+  }
+  const Wins: Wins = [...horizontalWins, ...verticalWins, ...diagonalWins];
+  return Wins;
+}
+
+export function initialGameState(size: number): Board {
+  return new Array(size * size).fill("") as Board;
+}
 
 export function changePlayer(player: Player): Player {
   if (player === "x") {
@@ -33,14 +40,18 @@ export function changePlayer(player: Player): Player {
   return "x";
 }
 
-export function checkWin(board: Board, player: Player): Player | undefined {
-  for (let i = 0; i < Wins.length; i++) {
+export function checkWin(
+  board: Board,
+  player: Player,
+  wins: Wins,
+): Player | undefined {
+  for (let i = 0; i < wins.length; i++) {
     let winCon: number = 0;
-    for (let j = 0; j < Wins[i].length; j++) {
-      if (board[Wins[i][j]] === player) {
+    for (let j = 0; j < wins[i].length; j++) {
+      if (board[wins[i][j]] === player) {
         winCon++;
       }
-      if (winCon === 3) {
+      if (winCon === (wins.length - 2) / 2) {
         return player;
       }
     }
@@ -52,6 +63,7 @@ export function move(
   position: number,
   prevGame: Board,
   player: Player,
+  wins: Wins,
 ): { newGame: Board; newPlayer: Player } | string {
   const newGame: Board = [...prevGame];
 
@@ -66,7 +78,7 @@ export function move(
   }
 
   // check if anybody has won
-  const winOutcome: Player | undefined = checkWin(newGame, player);
+  const winOutcome: Player | undefined = checkWin(newGame, player, wins);
   if (winOutcome !== undefined) {
     return `${winOutcome} has won the game!`;
   }
