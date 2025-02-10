@@ -3,7 +3,23 @@ export type Cell = Player | "";
 export type Board = Cell[];
 export type Wins = number[][];
 
-export const initialPlayer = "x" as Player;
+export type GameState = {
+  Player: Player;
+  Board: Board;
+  Size: number;
+  Interruption: boolean;
+  Start: boolean;
+  InterruptionMessage: string;
+};
+
+export const initialGameState = {
+  Player: "x" as Player,
+  Board: [""] as Board,
+  Size: 0,
+  Start: false,
+  Interruption: false,
+  InterruptionMessage: "",
+} as GameState;
 
 export function calculateWins(size: number): Wins {
   const horizontalWins: Wins = [];
@@ -29,7 +45,7 @@ export function calculateWins(size: number): Wins {
   return Wins;
 }
 
-export function initialGameState(size: number): Board {
+export function initialBoardState(size: number): Board {
   return new Array(size * size).fill("") as Board;
 }
 
@@ -59,36 +75,50 @@ export function checkWin(
   return undefined;
 }
 
-export function move(
-  position: number,
-  prevGame: Board,
-  player: Player,
-  wins: Wins,
-): { newGame: Board; newPlayer: Player } | string {
-  const newGame: Board = [...prevGame];
+export function move(position: number, prevGame: GameState): GameState {
+  const newGame: GameState = { ...prevGame };
+
+  // check how it is possible to win
+  const wins: Wins = calculateWins(newGame.Size);
 
   // check if the move is valid at all
-  if (prevGame[position] !== "") {
-    return "You done messed up, A-A-Ron!";
+  if (prevGame.Board[position] !== "") {
+    return {
+      ...newGame,
+      Interruption: true,
+      InterruptionMessage: "You done messed up, A-A-Ron!",
+    };
   }
 
   // update the board state
   else {
-    newGame[position] = player;
+    newGame.Board[position] = prevGame.Player;
   }
 
   // check if anybody has won
-  const winOutcome: Player | undefined = checkWin(newGame, player, wins);
+  const winOutcome: Player | undefined = checkWin(
+    newGame.Board,
+    prevGame.Player,
+    wins,
+  );
   if (winOutcome !== undefined) {
-    return `${winOutcome} has won the game!`;
+    return {
+      ...newGame,
+      Interruption: true,
+      InterruptionMessage: `${winOutcome} has won the game!`,
+    };
   }
 
   // check if the game is a tie
-  if (!newGame.includes("")) {
-    return "Tie game. Try being dumber next time.";
+  if (!newGame.Board.includes("")) {
+    return {
+      ...newGame,
+      Interruption: true,
+      InterruptionMessage: "Tie game. Try being dumber next time.",
+    };
   }
 
   // otherwise, go to the next move
-  const newPlayer: Player = changePlayer(player);
-  return { newGame: newGame, newPlayer: newPlayer };
+  const newPlayer: Player = changePlayer(prevGame.Player);
+  return { ...newGame, Player: newPlayer };
 }
