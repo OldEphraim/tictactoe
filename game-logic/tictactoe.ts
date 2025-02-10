@@ -67,7 +67,7 @@ export function checkWin(
       if (board[wins[i][j]] === player) {
         winCon++;
       }
-      if (winCon === (wins.length - 2) / 2) {
+      if (winCon === wins[i].length) {
         return player;
       }
     }
@@ -76,7 +76,7 @@ export function checkWin(
 }
 
 export function move(position: number, prevGame: GameState): GameState {
-  const newGame: GameState = { ...prevGame };
+  const newGame: GameState = { ...prevGame, Board: [...prevGame.Board] };
 
   // check how it is possible to win
   const wins: Wins = calculateWins(newGame.Size);

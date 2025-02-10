@@ -48,9 +48,12 @@ function App() {
               </button>
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
-                onClick={() =>
+                onClick={() => {
+                  if (gameState.Size > 0) {
                   setGameState({ ...gameState, Size: gameState.Size - 1 })
+                  }
                 }
+              }
               >
                 Decrement Grid Size
               </button>
