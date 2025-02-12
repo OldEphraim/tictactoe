@@ -29,7 +29,10 @@ export function createNewLobby(
   connectionId: ConnectionId,
   lobbyState: Lobby,
 ): Lobby {
-  const newLobby: Lobby = { ...lobbyState };
+  const newLobby: Lobby = {
+    ...lobbyState,
+    players: new Map(lobbyState.players),
+  };
 
   if (!newLobby.players.get("x")) {
     newLobby.players.set("x", connectionId);
@@ -47,7 +50,10 @@ export function createLonesomeLobby(
   connectionId: ConnectionId,
   lobbyState: Lobby,
 ): Lobby {
-  const newLonesomeLobby: Lobby = { ...lobbyState };
+  const newLonesomeLobby: Lobby = {
+    ...lobbyState,
+    players: new Map(lobbyState.players),
+  };
 
   newLonesomeLobby.players.set("x", connectionId);
   newLonesomeLobby.players.set("o", connectionId);
