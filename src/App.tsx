@@ -1,9 +1,13 @@
 import { Cell, GameState, initialGameState } from "../game-logic/tictactoe";
 import { useState, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
+import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 
 const socket: Socket = io("http://localhost:3001");
+
+const clientId: string = uuidv4();
+console.log("the following clientId has been generated:", clientId)
 
 function App() {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
@@ -18,12 +22,12 @@ function App() {
     };
   }, []);
 
-  function startTheGame(size: number) {
-    socket.emit("startGame", size);
+  function startTheGame(size: number, connectionId: string) {
+    socket.emit("startGame", size, connectionId);
   }
 
-  function handleClick(index: number) {
-    socket.emit("playerMove", index);
+  function handleClick(index: number, connectionId: string) {
+    socket.emit("playerMove", index, gameState.Player, connectionId);
   }
 
   function resetGame() {
@@ -60,7 +64,7 @@ function App() {
               </button>
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
-                onClick={() => startTheGame(gameState.Size)}
+                onClick={() => startTheGame(gameState.Size, clientId)}
               >
                 Start the Game
               </button>
@@ -99,7 +103,7 @@ function App() {
                   <button
                     key={index}
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold flex items-center justify-center aspect-square text-2xl rounded cursor-pointer px-4 py-4"
-                    onClick={() => handleClick(index)}
+                    onClick={() => handleClick(index, clientId)}
                   >
                     {cell}
                   </button>

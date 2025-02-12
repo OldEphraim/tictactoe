@@ -131,3 +131,5 @@ export function move(position: number, prevGame: GameState): GameState {
   const newPlayer: Player = changePlayer(prevGame.Player);
   return { ...newGame, Player: newPlayer };
 }
+
+// function resetGame()
