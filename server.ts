@@ -5,10 +5,12 @@ import cors from "cors";
 import { v4 as uuidv4 } from "uuid";
 import { initialGameState, move, startNewGame } from "./game-logic/tictactoe";
 import {
+  ConnectionId,
   initialLobbyState,
   isCurrentPlayer,
   createNewLobby,
   joinExistingLobby,
+  createLonesomeLobby,
 } from "./game-logic/lobbies";
 
 const app = express();
@@ -32,7 +34,7 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("playerMove", (position: number, connectionId: string) => {
+  socket.on("playerMove", (position: number, connectionId: ConnectionId) => {
     if (isCurrentPlayer(connectionId, lobby)) {
       lobby.gameState = move(position, lobby.gameState);
       io.emit("gameUpdate", lobby.gameState);
@@ -41,17 +43,22 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("startGame", (size: number, connectionId: string) => {
+  socket.on("startGame", (size: number, connectionId: ConnectionId) => {
     lobby.lobbyId = uuidv4();
     lobby.gameState = startNewGame(size);
     lobby = createNewLobby(connectionId, lobby);
-    console.log("lobby in socket.on startGame function:", lobby);
     io.emit("gameUpdate", lobby.gameState);
   });
 
-  socket.on("joinGame", (size: number, connectionId: string) => {
+  socket.on("playSelf", (size: number, connectionId: ConnectionId) => {
+    lobby.lobbyId = uuidv4();
+    lobby.gameState = startNewGame(size);
+    lobby = createLonesomeLobby(connectionId, lobby);
+    io.emit("gameUpdate", lobby.gameState);
+  });
+
+  socket.on("joinGame", (size: number, connectionId: ConnectionId) => {
     lobby = joinExistingLobby(size, connectionId);
-    console.log("lobby in socket.on joinGame function:", lobby);
     io.emit("gameUpdate", lobby.gameState);
   });
 

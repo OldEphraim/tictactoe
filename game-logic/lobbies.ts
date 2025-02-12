@@ -22,12 +22,6 @@ export function isCurrentPlayer(
   connectionId: ConnectionId,
   lobby: Lobby,
 ): boolean {
-  console.log("current connectionId:", connectionId);
-  console.log("current player:", lobby.gameState.Player);
-  console.log(
-    "current player connectionId:",
-    lobby.players.get(lobby.gameState.Player),
-  );
   return connectionId === lobby.players.get(lobby.gameState.Player);
 }
 
@@ -49,6 +43,18 @@ export function createNewLobby(
   return newLobby;
 }
 
+export function createLonesomeLobby(
+  connectionId: ConnectionId,
+  lobbyState: Lobby,
+): Lobby {
+  const newLonesomeLobby: Lobby = { ...lobbyState };
+
+  newLonesomeLobby.players.set("x", connectionId);
+  newLonesomeLobby.players.set("o", connectionId);
+
+  return newLonesomeLobby;
+}
+
 export function joinExistingLobby(size: number, connectionId: string): Lobby {
   if (searchLobbies(size) === -1) {
     console.log("Add some error handling here if no such lobby exists.");
@@ -61,15 +67,6 @@ export function joinExistingLobby(size: number, connectionId: string): Lobby {
 }
 
 export function searchLobbies(size: number): number {
-  console.log(
-    "output of searchLobbies:",
-    lobbies.findIndex(
-      (lobby) =>
-        lobby.gameState.Size === size &&
-        lobby.players.get("x") &&
-        !lobby.players.get("o"),
-    ),
-  );
   return lobbies.findIndex(
     (lobby) =>
       lobby.gameState.Size === size &&

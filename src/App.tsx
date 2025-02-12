@@ -22,15 +22,19 @@ function App() {
     };
   }, []);
 
-  function startNewGame(size: number, connectionId: string) {
+  function startNewGame(size: number, connectionId: ConnectionId) {
     socket.emit("startGame", size, connectionId);
   }
 
-  function joinExistingGame(size: number, connectionId: string) {
+  function joinExistingGame(size: number, connectionId: ConnectionId) {
     socket.emit("joinGame", size, connectionId);
   }
 
-  function handleClick(index: number, connectionId: string) {
+  function playSelf(size: number, connectionId: ConnectionId) {
+    socket.emit("playSelf", size, connectionId);
+  }
+
+  function handleClick(index: number, connectionId: ConnectionId) {
     socket.emit("playerMove", index, connectionId);
   }
 
@@ -47,37 +51,55 @@ function App() {
         <div className="text-[25px] font-bold text-center bg-gray-100 shadow-md">
           Grid Size: {gameState.Size}
           {!gameState.Start && (
-            <div className="flex">
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
-                onClick={() =>
-                  setGameState({ ...gameState, Size: gameState.Size + 1 })
-                }
-              >
-                Increment Grid Size
-              </button>
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
-                onClick={() => {
-                  if (gameState.Size > 0) {
-                    setGameState({ ...gameState, Size: gameState.Size - 1 });
+            <div>
+              <div className="flex justify-center">
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
+                  onClick={() =>
+                    setGameState({ ...gameState, Size: gameState.Size + 1 })
                   }
-                }}
-              >
-                Decrement Grid Size
-              </button>
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
-                onClick={() => startNewGame(gameState.Size, clientId)}
-              >
-                Create New Game
-              </button>
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
-                onClick={() => joinExistingGame(gameState.Size, clientId)}
-              >
-                Join Existing Game
-              </button>
+                >
+                  Increment Grid Size
+                </button>
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
+                  onClick={() => {
+                    if (gameState.Size > 0) {
+                      setGameState({ ...gameState, Size: gameState.Size - 1 });
+                    }
+                  }}
+                >
+                  Decrement Grid Size
+                </button>
+              </div>
+              <div className="flex justify-center">
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
+                  onClick={() => startNewGame(gameState.Size, clientId)}
+                >
+                  Create New Game (against Human!)
+                </button>
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
+                  onClick={() => joinExistingGame(gameState.Size, clientId)}
+                >
+                  Join Existing Game (against Human!)
+                </button>
+              </div>
+              <div className="flex justify-center">
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
+                  onClick={() => playSelf(gameState.Size, clientId)}
+                >
+                  Play Against Yourself
+                </button>
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
+                  // onClick={() => joinExistingGame(gameState.Size, clientId)}
+                >
+                  Play Against Computer
+                </button>
+              </div>
             </div>
           )}
         </div>
