@@ -7,7 +7,6 @@ import "./App.css";
 const socket: Socket = io("http://localhost:3001");
 
 const clientId: string = uuidv4();
-console.log("the following clientId has been generated:", clientId)
 
 function App() {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
