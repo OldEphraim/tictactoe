@@ -1,8 +1,4 @@
-import {
-  Cell,
-  GameState,
-  initialGameState,
-} from "../game-logic/tictactoe";
+import { Cell, GameState, initialGameState } from "../game-logic/tictactoe";
 import { useState, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 import "./App.css";
@@ -19,27 +15,19 @@ function App() {
 
     return () => {
       socket.off("gameUpdate");
-    }
-  }, [])
+    };
+  }, []);
 
   function startTheGame(size: number) {
-    socket.emit("startGame", size)
-    // setGameState({
-    //   ...gameState,
-    //   Board: initialBoardState(size),
-    //   Size: size,
-    //   Start: true,
-    // });
+    socket.emit("startGame", size);
   }
 
   function handleClick(index: number) {
     socket.emit("playerMove", index);
-    // setGameState(move(index, gameState));
   }
 
   function resetGame() {
     socket.emit("resetGame");
-    // setGameState(initialGameState);
   }
 
   return (
@@ -64,10 +52,9 @@ function App() {
                 className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
                 onClick={() => {
                   if (gameState.Size > 0) {
-                  setGameState({ ...gameState, Size: gameState.Size - 1 })
+                    setGameState({ ...gameState, Size: gameState.Size - 1 });
                   }
-                }
-              }
+                }}
               >
                 Decrement Grid Size
               </button>

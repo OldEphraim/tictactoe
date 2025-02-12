@@ -50,7 +50,12 @@ export function initialBoardState(size: number): Board {
 }
 
 export function startTheGame(size: number): GameState {
-  return {...initialGameState, Board: initialBoardState(size), Size: size, Start: true}
+  return {
+    ...initialGameState,
+    Board: initialBoardState(size),
+    Size: size,
+    Start: true,
+  };
 }
 
 export function changePlayer(player: Player): Player {
