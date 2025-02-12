@@ -84,6 +84,18 @@ export function checkWin(
   return undefined;
 }
 
+export function computerMove(prevGame: GameState): GameState {
+  const indexes: number[] = [];
+  for (let i = 0; i < prevGame.Board.length; i++) {
+    if (prevGame.Board[i] === "") {
+      indexes.push(i);
+    }
+  }
+  const randomIndex = indexes[Math.floor(Math.random() * indexes.length)];
+  const newState = move(randomIndex, prevGame);
+  return newState;
+}
+
 export function move(position: number, prevGame: GameState): GameState {
   const newGame: GameState = { ...prevGame, Board: [...prevGame.Board] };
 
@@ -129,7 +141,7 @@ export function move(position: number, prevGame: GameState): GameState {
 
   // otherwise, go to the next move
   const newPlayer: Player = changePlayer(prevGame.Player);
-  return { ...newGame, Player: newPlayer };
+  return { ...newGame, Player: newPlayer } as GameState;
 }
 
 // function resetGame()

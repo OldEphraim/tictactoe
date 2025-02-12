@@ -34,6 +34,10 @@ function App() {
     socket.emit("playSelf", size, connectionId);
   }
 
+  function playComputer(size: number, connectionId: ConnectionId) {
+    socket.emit("playComputer", size, connectionId);
+  }
+
   function handleClick(index: number, connectionId: ConnectionId) {
     socket.emit("playerMove", index, connectionId);
   }
@@ -95,7 +99,7 @@ function App() {
                 </button>
                 <button
                   className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
-                  // onClick={() => joinExistingGame(gameState.Size, clientId)}
+                  onClick={() => playComputer(gameState.Size, clientId)}
                 >
                   Play Against Computer
                 </button>

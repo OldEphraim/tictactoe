@@ -61,6 +61,21 @@ export function createLonesomeLobby(
   return newLonesomeLobby;
 }
 
+export function createComputerLobby(
+  connectionId: ConnectionId,
+  lobbyState: Lobby,
+): Lobby {
+  const newLobby: Lobby = {
+    ...lobbyState,
+    players: new Map(lobbyState.players),
+  };
+
+  newLobby.players.set("x", connectionId);
+  newLobby.players.set("o", "computer");
+
+  return newLobby;
+}
+
 export function joinExistingLobby(size: number, connectionId: string): Lobby {
   if (searchLobbies(size) === -1) {
     console.log("Add some error handling here if no such lobby exists.");
