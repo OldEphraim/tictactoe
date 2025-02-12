@@ -49,6 +49,10 @@ export function initialBoardState(size: number): Board {
   return new Array(size * size).fill("") as Board;
 }
 
+export function startTheGame(size: number): GameState {
+  return {...initialGameState, Board: initialBoardState(size), Size: size, Start: true}
+}
+
 export function changePlayer(player: Player): Player {
   if (player === "x") {
     return "o";

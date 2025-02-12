@@ -1,31 +1,45 @@
 import {
   Cell,
   GameState,
-  move,
-  initialBoardState,
   initialGameState,
 } from "../game-logic/tictactoe";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { io, Socket } from "socket.io-client";
 import "./App.css";
 
+const socket: Socket = io("http://localhost:3001");
+
 function App() {
-  const [gameState, setGameState] = useState(initialGameState);
+  const [gameState, setGameState] = useState<GameState>(initialGameState);
+
+  useEffect(() => {
+    socket.on("gameUpdate", (gameState) => {
+      setGameState(gameState);
+    });
+
+    return () => {
+      socket.off("gameUpdate");
+    }
+  }, [])
 
   function startTheGame(size: number) {
-    setGameState({
-      ...gameState,
-      Board: initialBoardState(size),
-      Size: size,
-      Start: true,
-    });
+    socket.emit("startGame", size)
+    // setGameState({
+    //   ...gameState,
+    //   Board: initialBoardState(size),
+    //   Size: size,
+    //   Start: true,
+    // });
   }
 
-  function handleClick(index: number, gameState: GameState) {
-    setGameState(move(index, gameState));
+  function handleClick(index: number) {
+    socket.emit("playerMove", index);
+    // setGameState(move(index, gameState));
   }
 
   function resetGame() {
-    setGameState(initialGameState);
+    socket.emit("resetGame");
+    // setGameState(initialGameState);
   }
 
   return (
@@ -98,7 +112,7 @@ function App() {
                   <button
                     key={index}
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold flex items-center justify-center aspect-square text-2xl rounded cursor-pointer px-4 py-4"
-                    onClick={() => handleClick(index, gameState)}
+                    onClick={() => handleClick(index)}
                   >
                     {cell}
                   </button>
