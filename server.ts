@@ -2,11 +2,13 @@ import express from "express";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import cors from "cors";
-import { initialGameState, move, startTheGame } from "./game-logic/tictactoe";
+import { v4 as uuidv4 } from "uuid";
+import { initialGameState, move, startNewGame } from "./game-logic/tictactoe";
 import {
   initialLobbyState,
   isCurrentPlayer,
-  playerJoin,
+  createNewLobby,
+  joinExistingLobby,
 } from "./game-logic/lobbies";
 
 const app = express();
@@ -35,14 +37,21 @@ io.on("connection", (socket) => {
       lobby.gameState = move(position, lobby.gameState);
       io.emit("gameUpdate", lobby.gameState);
     } else {
-      console.log("It is not your turn!");
+      console.log("It is not your turn, ", lobby.gameState.Player);
     }
   });
 
   socket.on("startGame", (size: number, connectionId: string) => {
-    lobby.gameState = startTheGame(size);
-    lobby = playerJoin(connectionId, lobby);
-    console.log(lobby);
+    lobby.lobbyId = uuidv4();
+    lobby.gameState = startNewGame(size);
+    lobby = createNewLobby(connectionId, lobby);
+    console.log("lobby in socket.on startGame function:", lobby);
+    io.emit("gameUpdate", lobby.gameState);
+  });
+
+  socket.on("joinGame", (size: number, connectionId: string) => {
+    lobby = joinExistingLobby(size, connectionId);
+    console.log("lobby in socket.on joinGame function:", lobby);
     io.emit("gameUpdate", lobby.gameState);
   });
 

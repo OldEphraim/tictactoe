@@ -1,4 +1,5 @@
 import { Cell, GameState, initialGameState } from "../game-logic/tictactoe";
+import { ConnectionId } from "../game-logic/lobbies";
 import { useState, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
@@ -6,7 +7,7 @@ import "./App.css";
 
 const socket: Socket = io("http://localhost:3001");
 
-const clientId: string = uuidv4();
+const clientId: ConnectionId = uuidv4();
 
 function App() {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
@@ -21,12 +22,16 @@ function App() {
     };
   }, []);
 
-  function startTheGame(size: number, connectionId: string) {
+  function startNewGame(size: number, connectionId: string) {
     socket.emit("startGame", size, connectionId);
   }
 
+  function joinExistingGame(size: number, connectionId: string) {
+    socket.emit("joinGame", size, connectionId);
+  }
+
   function handleClick(index: number, connectionId: string) {
-    socket.emit("playerMove", index, gameState.Player, connectionId);
+    socket.emit("playerMove", index, connectionId);
   }
 
   function resetGame() {
@@ -63,9 +68,15 @@ function App() {
               </button>
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
-                onClick={() => startTheGame(gameState.Size, clientId)}
+                onClick={() => startNewGame(gameState.Size, clientId)}
               >
-                Start the Game
+                Create New Game
+              </button>
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-[15px] text-white font-bold flex items-center justify-center rounded cursor-pointer"
+                onClick={() => joinExistingGame(gameState.Size, clientId)}
+              >
+                Join Existing Game
               </button>
             </div>
           )}

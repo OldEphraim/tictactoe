@@ -2,35 +2,44 @@ import { GameState, initialGameState, Player } from "./tictactoe";
 
 export type ConnectionId = string;
 
+export type Lobbies = Lobby[];
+
 export type Lobby = {
   gameState: GameState;
-  gameId: number;
+  lobbyId: string;
   players: Map<Player, ConnectionId>;
 };
 
 export const initialLobbyState = {
   gameState: initialGameState,
-  gameId: 2,
-  players: new Map(),
+  lobbyId: "0",
+  players: new Map<Player, ConnectionId>(),
 } as Lobby;
+
+export const lobbies: Lobbies = [];
 
 export function isCurrentPlayer(
   connectionId: ConnectionId,
   lobby: Lobby,
 ): boolean {
-  return connectionId === lobby.players[lobby.gameState.Player];
+  console.log("current connectionId:", connectionId);
+  console.log("current player:", lobby.gameState.Player);
+  console.log(
+    "current player connectionId:",
+    lobby.players.get(lobby.gameState.Player),
+  );
+  return connectionId === lobby.players.get(lobby.gameState.Player);
 }
 
-export function playerJoin(
+export function createNewLobby(
   connectionId: ConnectionId,
   lobbyState: Lobby,
 ): Lobby {
   const newLobby: Lobby = { ...lobbyState };
 
-  if (!newLobby.players["x"]) {
-    newLobby.players["x"] = connectionId;
-  } else if (!newLobby.players["o"]) {
-    newLobby.players["o"] = connectionId;
+  if (!newLobby.players.get("x")) {
+    newLobby.players.set("x", connectionId);
+    lobbies.push(newLobby);
   } else {
     console.log(
       "Either add the ability to join as a spectator or log an error; for now, we won't update lobby state.",
@@ -38,4 +47,33 @@ export function playerJoin(
   }
 
   return newLobby;
+}
+
+export function joinExistingLobby(size: number, connectionId: string): Lobby {
+  if (searchLobbies(size) === -1) {
+    console.log("Add some error handling here if no such lobby exists.");
+  } else {
+    const newLobby: Lobby = { ...lobbies[searchLobbies(size)] };
+    newLobby.players.set("o", connectionId);
+    return newLobby;
+  }
+  return initialLobbyState;
+}
+
+export function searchLobbies(size: number): number {
+  console.log(
+    "output of searchLobbies:",
+    lobbies.findIndex(
+      (lobby) =>
+        lobby.gameState.Size === size &&
+        lobby.players.get("x") &&
+        !lobby.players.get("o"),
+    ),
+  );
+  return lobbies.findIndex(
+    (lobby) =>
+      lobby.gameState.Size === size &&
+      lobby.players.get("x") &&
+      !lobby.players.get("o"),
+  );
 }
