@@ -5,7 +5,7 @@ import { io, Socket } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 
-const socket: Socket = io("http://localhost:3001");
+const socket: Socket = io(process.env.PORT || "http://localhost:3001");
 
 const clientId: ConnectionId = uuidv4();
 

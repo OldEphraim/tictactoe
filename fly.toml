@@ -1,0 +1,28 @@
+# fly.toml app configuration file generated for tic-tac-toe-crimson-violet-9233 on 2025-02-12T17:34:53-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'tic-tac-toe-crimson-violet-9233'
+primary_region = 'ewr'
+
+[build]
+  # Ensure Fly deploys your Node.js backend
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "3001"  # Ensure the backend listens on 3001
+  FRONTEND_URL = "https://my-frontend-site.netlify.app"
+
+[[services]]
+  internal_port = 3001
+  processes = ["app"]
+  protocol = "tcp"
+
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 250
+    soft_limit = 200
+
+  [[services.ports]]
+    port = 3001

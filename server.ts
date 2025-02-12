@@ -20,20 +20,20 @@ import {
 } from "./game-logic/lobbies";
 
 const app = express();
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173", credentials: true }));
 
 app.get("/", (req, res) => {
   res.send("Hello, world");
 });
 
 const httpServer = createServer(app);
-const PORT = 3001;
+const PORT = Number(process.env.PORT) || 3001;
 
 let lobby = initialLobbyState;
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(
     `Backend is running on Express server on http://localhost:${PORT}`,
   );
