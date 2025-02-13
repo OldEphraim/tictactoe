@@ -5,7 +5,12 @@ import { io, Socket } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 
-const socket: Socket = io(process.env.PORT || "http://localhost:3001");
+const BACKEND_URL =
+  import.meta.env?.VITE_BACKEND_URL ?? process.env.VITE_BACKEND_URL ?? "https://tic-tac-toe-crimson-violet-9233.fly.dev";
+
+const socket: Socket = io(BACKEND_URL, {
+  transports: ["websocket", "polling"],
+});
 
 const clientId: ConnectionId = uuidv4();
 

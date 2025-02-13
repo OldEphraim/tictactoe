@@ -19,8 +19,10 @@ import {
   createComputerLobby,
 } from "./game-logic/lobbies";
 
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://alangarber-tictactoe.netlify.app";
+
 const app = express();
-app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 
 app.get("/", (req, res) => {
   res.send("Hello, world");
@@ -33,7 +35,7 @@ let lobby = initialLobbyState;
 
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: FRONTEND_URL,
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -88,8 +90,8 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(PORT, "0.0.0.0", () => {
+httpServer.listen(PORT, () => {
   console.log(
-    `Backend is running on Express server on http://localhost:${PORT}`,
+    `Backend is running on Express server on port ${PORT}`,
   );
 });

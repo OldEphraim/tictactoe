@@ -12,17 +12,10 @@ primary_region = 'ewr'
 
 [env]
   PORT = "3001"  # Ensure the backend listens on 3001
-  FRONTEND_URL = "https://my-frontend-site.netlify.app"
+  FRONTEND_URL = "https://alangarber-tictactoe.netlify.app"
 
-[[services]]
-  internal_port = 3001
-  processes = ["app"]
-  protocol = "tcp"
-
-  [services.concurrency]
-    type = "connections"
-    hard_limit = 250
-    soft_limit = 200
-
-  [[services.ports]]
-    port = 3001
+[http_service]
+internal_port = 3001
+force_https = true
+auto_stop_machines = false
+auto_start_machines = true
