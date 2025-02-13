@@ -1,6 +1,7 @@
 import { Cell, GameState, initialGameState } from "../game-logic/tictactoe";
 import { ConnectionId } from "../game-logic/lobbies";
 import { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import { io, Socket } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
@@ -19,14 +20,16 @@ const clientId: ConnectionId = uuidv4();
 
 function App() {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const notify = (text: string) => toast(text);
 
   useEffect(() => {
     socket.on("gameUpdate", (gameState) => {
       setGameState(gameState);
 
-      if (gameState.Interruption) {
-        setIsModalOpen(true);
+      if (gameState.Interruption && !gameState.InterruptionMessage.includes("has won the game!")) {
+        notify(gameState.InterruptionMessage);
+        closeInterruption(clientId);
       }
     });
 
@@ -52,25 +55,22 @@ function App() {
   }
 
   function handleClick(index: number, connectionId: ConnectionId) {
-    if (!isModalOpen) {
       socket.emit("playerMove", index, connectionId);
-    }
   }
 
-  function closeModal(connectionId: ConnectionId) {
-    if (isModalOpen) {
-      setIsModalOpen(false);
-      socket.emit("closeModal", connectionId);
+  function closeInterruption(connectionId: ConnectionId) {
+      socket.emit("closeInterruption", connectionId);
     }
-  }
 
   function resetGame() {
     socket.emit("resetGame");
-    setIsModalOpen(false);
   }
 
   return (
     <>
+    <div className="toast-container">
+      <ToastContainer />
+    </div>
       {/* TITLE */}
       <div className="min-h-screen flex flex-col items-center">
         <div className="text-[50px] font-bold text-center bg-gray-100 shadow-md">
@@ -134,7 +134,7 @@ function App() {
         </div>
 
         {/* MODAL */}
-        {isModalOpen && (
+        {/* {isModalOpen && (
           <div className="h-screen flex items-center justify-center inset-0 bg-gray-900 bg-opacity-75 z-50">
             <div className="bg-white p-6 rounded-lg shadow-xl border-4 border-blue-500 text-center w-96">
               <h2 className="text-2xl font-bold text-gray-800">
@@ -143,7 +143,7 @@ function App() {
               <div className="mt-4 flex justify-center gap-4">
                 <button
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  onClick={() => closeModal(clientId)}
+                  onClick={() => closeInterruption(clientId)}
                 >
                   Back to Game
                 </button>
@@ -156,12 +156,12 @@ function App() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* GAME BOARD AND END SCREEN */}
         {gameState.Start && (
           <div className="flex-1 flex justify-center items-center mt-[60px] z-0">
-            {/* {gameState.Interruption ? (
+            {gameState.InterruptionMessage.includes("has won the game!") ? (
               <>
                 <div className="text-center">
                   <div className="text-[50px] mb-4">
@@ -180,7 +180,7 @@ function App() {
                   </div>
                 </div>
               </>
-            ) : ( */}
+            ) : (
             <div
               className={`grid gap-2 w-[300px]`}
               style={{
@@ -197,7 +197,7 @@ function App() {
                 </button>
               ))}
             </div>
-            {/* )} */}
+             )} 
           </div>
         )}
       </div>

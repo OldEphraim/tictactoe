@@ -84,11 +84,12 @@ export function checkWin(
   return undefined;
 }
 
-export function closeModal(prevGame: GameState): GameState {
+export function closeInterruption(prevGame: GameState): GameState {
   const newGame: GameState = {
     ...prevGame,
     Board: [...prevGame.Board],
     Interruption: false,
+    InterruptionMessage: "",
   };
 
   return newGame;
