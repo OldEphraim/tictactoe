@@ -8,6 +8,7 @@ import {
   move,
   startNewGame,
   computerMove,
+  closeModal,
 } from "./game-logic/tictactoe";
 import {
   ConnectionId,
@@ -81,6 +82,13 @@ io.on("connection", (socket) => {
   socket.on("joinGame", (size: number, connectionId: ConnectionId) => {
     lobby = joinExistingLobby(size, connectionId);
     io.emit("gameUpdate", lobby.gameState);
+  });
+
+  socket.on("closeModal", (connectionId: ConnectionId) => {
+    if (isCurrentPlayer(connectionId, lobby)) {
+      lobby.gameState = closeModal(lobby.gameState);
+      io.emit("gameUpdate", lobby.gameState);
+    }
   });
 
   socket.on("resetGame", () => {

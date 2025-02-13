@@ -84,6 +84,16 @@ export function checkWin(
   return undefined;
 }
 
+export function closeModal(prevGame: GameState): GameState {
+  const newGame: GameState = {
+    ...prevGame,
+    Board: [...prevGame.Board],
+    Interruption: false,
+  };
+
+  return newGame;
+}
+
 export function computerMove(prevGame: GameState): GameState {
   const indexes: number[] = [];
   for (let i = 0; i < prevGame.Board.length; i++) {
