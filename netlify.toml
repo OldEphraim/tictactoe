@@ -1,5 +1,5 @@
 [build]
-  command = "bunx --bun vite"
+  command = "bun run build"
   publish = "dist"
 
 [[redirects]]
