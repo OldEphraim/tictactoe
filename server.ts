@@ -48,10 +48,10 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
   socket.on("playerMove", (position: number, connectionId: ConnectionId) => {
-    if (isCurrentPlayer(connectionId, lobby)) {
+    if (isCurrentPlayer(connectionId, lobby) && connectionId !== "computer") {
       lobby.gameState = move(position, lobby.gameState);
       io.emit("gameUpdate", lobby.gameState);
-    } else if (isCurrentPlayer("computer", lobby)) {
+    } else if (position === -1 && lobby.gameState.Player !== "x") {
       lobby.gameState = computerMove(lobby.gameState);
       io.emit("gameUpdate", lobby.gameState);
     } else {
@@ -65,21 +65,21 @@ io.on("connection", (socket) => {
 
   socket.on("startGame", (size: number, connectionId: ConnectionId) => {
     lobby.lobbyId = uuidv4();
-    lobby.gameState = startNewGame(size);
+    lobby.gameState = startNewGame(size, false);
     lobby = createNewLobby(connectionId, lobby);
     io.emit("gameUpdate", lobby.gameState);
   });
 
   socket.on("playSelf", (size: number, connectionId: ConnectionId) => {
     lobby.lobbyId = uuidv4();
-    lobby.gameState = startNewGame(size);
+    lobby.gameState = startNewGame(size, false);
     lobby = createLonesomeLobby(connectionId, lobby);
     io.emit("gameUpdate", lobby.gameState);
   });
 
   socket.on("playComputer", (size: number, connectionId: ConnectionId) => {
     lobby.lobbyId = uuidv4();
-    lobby.gameState = startNewGame(size);
+    lobby.gameState = startNewGame(size, true);
     lobby = createComputerLobby(connectionId, lobby);
     io.emit("gameUpdate", lobby.gameState);
   });

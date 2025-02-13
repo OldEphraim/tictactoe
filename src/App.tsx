@@ -21,10 +21,14 @@ const clientId: ConnectionId = uuidv4();
 function App() {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
 
-  const notify = (text: string) => toast(text);
+  const notify = (text: string) => toast(text, {
+    autoClose: 3000,
+  });
 
   useEffect(() => {
-    socket.on("gameUpdate", (gameState) => {
+    socket.on("gameUpdate", (gameState: GameState) => {
+      console.log("Any game update");
+      console.log("current gameState:", gameState);
       setGameState(gameState);
 
       if (
@@ -33,6 +37,10 @@ function App() {
       ) {
         notify(gameState.InterruptionMessage);
         closeInterruption(clientId);
+      }
+
+      if (gameState.ComputerOpponent && gameState.Player === "o") {
+        socket.emit("playerMove", -1, "computer");
       }
     });
 

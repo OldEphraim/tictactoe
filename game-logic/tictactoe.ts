@@ -10,6 +10,7 @@ export type GameState = {
   Interruption: boolean;
   Start: boolean;
   InterruptionMessage: string;
+  ComputerOpponent: boolean;
 };
 
 export const initialGameState = {
@@ -19,6 +20,7 @@ export const initialGameState = {
   Start: false,
   Interruption: false,
   InterruptionMessage: "",
+  ComputerOpponent: false,
 } as GameState;
 
 export function calculateWins(size: number): Wins {
@@ -49,12 +51,13 @@ export function initialBoardState(size: number): Board {
   return new Array(size * size).fill("") as Board;
 }
 
-export function startNewGame(size: number): GameState {
+export function startNewGame(size: number, computer: boolean): GameState {
   return {
     ...initialGameState,
     Board: initialBoardState(size),
     Size: size,
     Start: true,
+    ComputerOpponent: computer,
   };
 }
 
