@@ -27,8 +27,6 @@ function App() {
 
   useEffect(() => {
     socket.on("gameUpdate", (gameState: GameState) => {
-      console.log("Any game update");
-      console.log("current gameState:", gameState);
       setGameState(gameState);
 
       if (
