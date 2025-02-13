@@ -1,4 +1,9 @@
-import { GameState, initialGameState, Player } from "./tictactoe";
+import {
+  GameState,
+  initialGameState,
+  Player,
+  createInterruption,
+} from "./tictactoe";
 
 export type ConnectionId = string;
 
@@ -37,10 +42,6 @@ export function createNewLobby(
   if (!newLobby.players.get("x")) {
     newLobby.players.set("x", connectionId);
     lobbies.push(newLobby);
-  } else {
-    console.log(
-      "Either add the ability to join as a spectator or log an error; for now, we won't update lobby state.",
-    );
   }
 
   return newLobby;
@@ -78,13 +79,19 @@ export function createComputerLobby(
 
 export function joinExistingLobby(size: number, connectionId: string): Lobby {
   if (searchLobbies(size) === -1) {
-    console.log("Add some error handling here if no such lobby exists.");
+    const errorMessageLobby: Lobby = {
+      ...initialLobbyState,
+      gameState: createInterruption(
+        "No human is waiting for a game like this ☹️",
+        initialLobbyState.gameState,
+      ),
+    };
+    return errorMessageLobby;
   } else {
     const newLobby: Lobby = { ...lobbies[searchLobbies(size)] };
     newLobby.players.set("o", connectionId);
     return newLobby;
   }
-  return initialLobbyState;
 }
 
 export function searchLobbies(size: number): number {

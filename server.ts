@@ -9,6 +9,7 @@ import {
   startNewGame,
   computerMove,
   closeInterruption,
+  createInterruption,
 } from "./game-logic/tictactoe";
 import {
   ConnectionId,
@@ -54,7 +55,11 @@ io.on("connection", (socket) => {
       lobby.gameState = computerMove(lobby.gameState);
       io.emit("gameUpdate", lobby.gameState);
     } else {
-      console.log("It is not your turn, ", lobby.gameState.Player);
+      lobby.gameState = createInterruption(
+        "It is not your turn, ".concat(lobby.gameState.Player),
+        lobby.gameState,
+      );
+      io.emit("gameUpdate", lobby.gameState);
     }
   });
 

@@ -84,6 +84,20 @@ export function checkWin(
   return undefined;
 }
 
+export function createInterruption(
+  interruption: string,
+  prevGame: GameState,
+): GameState {
+  const newGame: GameState = {
+    ...prevGame,
+    Board: [...prevGame.Board],
+    Interruption: true,
+    InterruptionMessage: interruption,
+  };
+
+  return newGame;
+}
+
 export function closeInterruption(prevGame: GameState): GameState {
   const newGame: GameState = {
     ...prevGame,
