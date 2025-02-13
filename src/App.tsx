@@ -6,7 +6,9 @@ import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 
 const BACKEND_URL =
-  import.meta.env?.VITE_BACKEND_URL ?? process.env.VITE_BACKEND_URL ?? "https://tic-tac-toe-crimson-violet-9233.fly.dev";
+  import.meta.env?.VITE_BACKEND_URL ??
+  process.env.VITE_BACKEND_URL ??
+  "https://tic-tac-toe-crimson-violet-9233.fly.dev";
 
 const socket: Socket = io(BACKEND_URL, {
   transports: ["websocket", "polling"],
