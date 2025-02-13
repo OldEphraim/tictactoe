@@ -20,7 +20,9 @@ import {
 } from "./game-logic/lobbies";
 
 const FRONTEND_URL =
-  process.env.FRONTEND_URL || "https://alangarber-tictactoe.netlify.app";
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:5173"
+    : process.env.FRONTEND_URL || "https://alangarber-tictactoe.netlify.app";
 
 const app = express();
 app.use(cors({ origin: FRONTEND_URL, credentials: true }));
@@ -91,6 +93,6 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`Backend is running on Express server on port ${PORT}`);
 });
